@@ -1,13 +1,35 @@
-const { createServer } = require('node:http');
+function random() {
+  let randomNo = Math.floor(Math.random() * 100);
+  console.log(randomNo);
+  return randomNo; //
+}
 
-const hostname = '127.0.0.1';
+function dataCentreAvailability(){
+    const centre1 = random();
+    const centre2 = random();
+    const centre3 = random();
+    return [centre1, centre2, centre3];
+}
+
+const express = require('express');
+
+const server = express();
+server.use(express.json());
+
 const port = 3000;
-const server = createServer((req, res) => {
-    res.statusCode = 200;
-    res.setHeader('Content-Type', 'text/plain');
-    res.end('Hello World');
+
+server.listen(port, () => {
+    console.log(`Server listening on port: ${port}`);
 });
 
-server.listen(port, hostname, () => {
-    console.log('Server running at http://${hostname}:${port}/');
+server.get("/availability", (request, response) => {
+    const dataCentres = dataCentreAvailability();
+    const bestCentreAvailability = Math.max(...dataCentres);
+    const bestCentreIndex = dataCentres.indexOf(bestCentreAvailability);
+    
+    response.json({
+        bestCentre: bestCentreIndex + 1,
+        availability: bestCentreAvailability,
+        allCentres: dataCentres
+    });
 });
